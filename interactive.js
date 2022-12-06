@@ -16,6 +16,7 @@ $(document).ready(function() {
         antialias: true
     });
 
+
     map.on('load', () => {
         // Insert the layer beneath any symbol layer.
         const layers = map.getStyle().layers;
@@ -23,6 +24,33 @@ $(document).ready(function() {
             (layer) => layer.type === 'symbol' && layer.layout['text-field']
         ).id;
 
+        map.on('load', () => {
+            map.addSource('wms-test-source', {
+            'type': 'image/png',
+            // use the tiles option to specify a WMS tile source URL
+            // https://docs.mapbox.com/mapbox-gl-js/style-spec/sources/
+            'tiles': [
+            'http://localhost:8080/geoserver/test_omgeving/wms?service=WMS&version=1.1.0&request=GetMap&layers=test_omgeving%3Agreenman-green_spots_raster&bbox=580356.9037560226%2C6740902.65383217%2C611420.194458439%2C6757343.971927102&width=768&height=406&srs=EPSG%3A3857&styles=&format=application%2Fopenlayers3'
+            ],
+            'tileSize': 256
+            });
+            map.addLayer(
+            {
+            'id': 'wms-test-layer',
+            'type': 'image/png',
+            'source': 'wms-test-source',
+            'paint': {}
+            },
+            );
+            });
+
+        
+        map.addControl(
+            new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl
+            })
+            );
         // The 'building' layer in the Mapbox Streets
         // vector tileset contains building height data
         // from OpenStreetMap.
@@ -63,6 +91,8 @@ $(document).ready(function() {
             },
             labelLayerId
         );
+        // Add the control to the map.
+
     })});
 
 
